@@ -8,6 +8,7 @@ function Header() {
       <nav>
         <NavLink to="/">Главная</NavLink>
         <NavLink to="/mood">Настроение</NavLink>
+        <NavLink to="/energy">Енергия</NavLink>
       </nav>
     </header>
   );
