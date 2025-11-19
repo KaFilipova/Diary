@@ -1,0 +1,51 @@
+// Переменные
+$primary-color: #646cff;
+$primary-color-react: #61dafb;
+$text-color-muted: #888;
+$max-width: 1280px;
+
+#root {
+  max-width: $max-width;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+
+  &:hover {
+    filter: drop-shadow(0 0 2em #{rgba($primary-color, 0.67)});
+  }
+
+  &.react:hover {
+    filter: drop-shadow(0 0 2em #{rgba($primary-color-react, 0.67)});
+  }
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: $text-color-muted;
+}
+
