@@ -1,0 +1,58 @@
+import { Box, Button } from "@mui/material";
+import { NavLink } from "react-router-dom";
+
+const styles = {
+  color: "rgb(94, 47, 3)",
+  fontWeight: 500,
+  textTransform: "none",
+  fontSize: "1rem",
+  padding: "0.5rem 1rem",
+  borderRadius: "8px",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    backgroundColor: "rgba(94, 47, 3, 0.1)",
+    transform: "translateY(-2px)",
+  },
+  "&.active": {
+    backgroundColor: "rgba(94, 47, 3, 0.2)",
+    fontWeight: 600,
+  },
+};
+
+const Links = [
+  {
+    to: "/mood",
+    label: "Настроение",
+  },
+  {
+    to: "/calories",
+    label: "Употреблено калорий",
+  },
+  {
+    to: "/todo",
+    label: "Список задач",
+  },
+];
+
+const Navigation = () => {
+  return (
+    <Box
+      component="nav"
+      sx={{
+        flex: 1,
+        display: "flex",
+        justifyContent: "center",
+        gap: "0.5rem",
+        alignItems: "center",
+      }}
+    >
+      {Links.map((link) => (
+        <Button key={link.to} component={NavLink} to={link.to} sx={styles}>
+          {link.label}
+        </Button>
+      ))}
+    </Box>
+  );
+};
+
+export default Navigation;

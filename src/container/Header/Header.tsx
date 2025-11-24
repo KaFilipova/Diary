@@ -1,59 +1,46 @@
-import { AppBar, Toolbar, Typography, Box } from "@mui/material";
+import { AppBar, Toolbar, Box, Tooltip, IconButton } from "@mui/material";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { NavLink } from "react-router-dom";
 import logoImage from "../../assets/images/diary_logo.png";
-import "./Header.scss";
-import SportsGymnasticsSharpIcon from "@mui/icons-material/SportsGymnasticsSharp";
+import Navigation from "../../components/Navigation/Navigation";
 
 function Header() {
   return (
-    <>
-      <AppBar
-        position="static"
+    <AppBar
+      position="static"
+      sx={{
+        display: "flex",
+        minHeight: "70px",
+        backgroundColor: "rgba(176, 177, 153, 0.94)",
+      }}
+    >
+      <Toolbar
         sx={{
           minHeight: "70px",
-          backgroundColor: "rgba(176, 177, 153, 0.94)",
+          padding: "0 2rem",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        <Toolbar
-          sx={{
-            minHeight: "70px",
-            padding: "0 2rem",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
-          <img src={logoImage} alt="logo" style={{ height: 38, width: 48 }} />
-          <Box
-            component="nav"
-            sx={{
-              display: "flex",
-              gap: "1.5rem",
-              padding: "1rem 2rem",
-              backgroundColor: "rgba(176, 177, 153, 0.94)",
-              justifyContent: "center",
-            }}
-          >
-            <NavLink to="/">Главная</NavLink>
-            <NavLink to="/mood">Настроение</NavLink>
-            <NavLink to="/todo">Список задач</NavLink>
-            <NavLink to="/calories">Употреблено калорий</NavLink>
-          </Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontSize: "1.5rem",
-              fontWeight: 600,
-              flexGrow: 1,
-              color: "rgb(94, 47, 3)",
-            }}
-          >
-            Дневник - твой ежедневный балланс <SportsGymnasticsSharpIcon />
-          </Typography>
-
-          <Box sx={{ flexGrow: 1 }} />
-        </Toolbar>
-      </AppBar>
-    </>
+        <Box sx={{ flex: "0 0 auto" }}>
+          <Tooltip followCursor title="Дневник - твой ежедневный балланс">
+            <NavLink to="/">
+              <img
+                src={logoImage}
+                alt="logo"
+                style={{ height: 38, width: 48 }}
+              />
+            </NavLink>
+          </Tooltip>
+        </Box>
+        <Navigation />
+        <Box sx={{ flex: "0 0 auto" }}>
+          <IconButton>
+            <CalendarTodayIcon />
+          </IconButton>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
 
