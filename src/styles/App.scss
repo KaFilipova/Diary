@@ -1,13 +1,11 @@
 // Переменные
-$primary-color: #646cff;
-$primary-color-react: #61dafb;
+$primary-color: #ff6464;
+$primary-color-react: #fb6161;
 $text-color-muted: #888;
 $max-width: 1280px;
 
 #root {
-  max-width: $max-width;
-  margin: 0 auto;
-  padding: 2rem;
+  padding: 0;
   text-align: center;
 }
 
@@ -48,4 +46,3 @@ $max-width: 1280px;
 .read-the-docs {
   color: $text-color-muted;
 }
-

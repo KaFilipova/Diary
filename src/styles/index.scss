@@ -1,7 +1,7 @@
 // Переменные
-$font-family-base: system-ui, Avenir, Helvetica, Arial, sans-serif;
-$primary-color: #646cff;
-$primary-color-hover: #535bf2;
+$font-family-base: "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
+$primary-color: hsl(237, 100%, 70%);
+$primary-color-hover: #b41919;
 $text-color-dark: rgba(255, 255, 255, 0.87);
 $bg-color-dark: #242424;
 $text-color-light: #213547;
@@ -36,8 +36,6 @@ a {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -82,4 +80,3 @@ button {
     }
   }
 }
-
