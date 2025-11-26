@@ -1,10 +1,13 @@
 import { AppBar, Toolbar, Box, Tooltip, IconButton } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import { NavLink } from "react-router-dom";
-import logoImage from "../../assets/images/diary_logo.png";
+import { NavLink, useLocation } from "react-router-dom";
+import logoImage from "../../assets/images/logo.png";
 import Navigation from "../../components/Navigation/Navigation";
 
 function Header() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   return (
     <AppBar
       position="static"
@@ -28,12 +31,12 @@ function Header() {
               <img
                 src={logoImage}
                 alt="logo"
-                style={{ height: 38, width: 48 }}
+                style={{ height: 48, width: 58 }}
               />
             </NavLink>
           </Tooltip>
         </Box>
-        <Navigation />
+        {!isHomePage && <Navigation />}
         <Box sx={{ flex: "0 0 auto" }}>
           <IconButton>
             <CalendarTodayIcon />

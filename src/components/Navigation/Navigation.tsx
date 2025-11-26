@@ -1,5 +1,6 @@
 import { Box, Button } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { HOME_PAGE_LINKS } from "../../utils/HomePageLinks";
 
 const styles = {
   color: "rgb(94, 47, 3)",
@@ -19,21 +20,6 @@ const styles = {
   },
 };
 
-const Links = [
-  {
-    to: "/mood",
-    label: "Настроение",
-  },
-  {
-    to: "/calories",
-    label: "Употреблено калорий",
-  },
-  {
-    to: "/todo",
-    label: "Список задач",
-  },
-];
-
 const Navigation = () => {
   return (
     <Box
@@ -46,7 +32,7 @@ const Navigation = () => {
         alignItems: "center",
       }}
     >
-      {Links.map((link) => (
+      {HOME_PAGE_LINKS.map((link) => (
         <Button key={link.to} component={NavLink} to={link.to} sx={styles}>
           {link.label}
         </Button>
