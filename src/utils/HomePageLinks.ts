@@ -3,18 +3,18 @@ import moodGoodImage from "../assets/images/mood-good.png";
 export const HOME_PAGE_LINKS = [
   {
     to: "/mood",
-    label: "Настроение и энергия ",
-    description: "Перейдите к шкале настроения и энергии",
+    label: "Mood and Energy",
+    description: "Go to mood and energy scale",
     image: moodGoodImage,
   },
   {
     to: "/todo",
-    label: "Список задач",
-    description: "Управляйте своими задачами и планами",
+    label: "Todo List",
+    description: "Manage your tasks and plans",
   },
   {
     to: "/calories",
-    label: "Употреблено калорий",
-    description: "Ведите учёт потребляемых калорий",
+    label: "Calories Consumed",
+    description: "Track your calorie intake",
   },
 ];

@@ -3,7 +3,7 @@ import "./Footer.scss";
 function Footer() {
   return (
     <footer>
-      <p>&copy; 2024 Дневник</p>
+      <p>&copy; 2024 Diary</p>
     </footer>
   );
 }

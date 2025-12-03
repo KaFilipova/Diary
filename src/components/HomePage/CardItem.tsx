@@ -5,6 +5,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useNavigate } from "react-router-dom";
+import { shouldMoodRotate, getMoodColor } from "../../utils/moodStorage";
 
 export type CardItemProps = {
   to: string;
@@ -12,10 +13,13 @@ export type CardItemProps = {
   description: string;
   image?: string;
   tooltipText?: string;
+  moodName?: string | null;
 };
 
-function CardItem({ to, label, description, image }: CardItemProps) {
+function CardItem({ to, label, description, image, moodName }: CardItemProps) {
   const navigate = useNavigate();
+  const shouldRotate = shouldMoodRotate(moodName || null);
+  const moodColor = getMoodColor(moodName || null);
 
   const handleClick = () => {
     navigate(to);
@@ -32,12 +36,22 @@ function CardItem({ to, label, description, image }: CardItemProps) {
         "&:hover": {
           transform: "translateY(-8px)",
           boxShadow: 6,
-          "& .sun-image": {
-            animation: "rotate 3s ease-in-out 1, glow 2s ease-in-out infinite",
-            animationFillMode: "forwards",
+          "& .mood-image": {
             transform: "scale(1.1)",
-            filter:
-              "drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.6))",
+            ...(shouldRotate
+              ? {
+                  // For mood-awesome and mood-good: rotation + glow
+                  animation:
+                    "rotate 3s ease-in-out 1, glow 2s ease-in-out infinite",
+                  animationFillMode: "forwards",
+                  filter:
+                    "drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.6))",
+                }
+              : {
+                  // For others: only glow (no rotation) with mood color
+                  animation: "glow 2s ease-in-out infinite",
+                  filter: `drop-shadow(0 0 15px ${moodColor}) drop-shadow(0 0 25px ${moodColor})`,
+                }),
           },
         },
         "@keyframes rotate": {
@@ -50,12 +64,10 @@ function CardItem({ to, label, description, image }: CardItemProps) {
         },
         "@keyframes glow": {
           "0%, 100%": {
-            filter:
-              "drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.6))",
+            opacity: 1,
           },
           "50%": {
-            filter:
-              "drop-shadow(0 0 20px rgba(255, 152, 0, 1)) drop-shadow(0 0 35px rgba(255, 193, 7, 0.8)) drop-shadow(0 0 45px rgba(255, 235, 59, 0.6))",
+            opacity: 0.8,
           },
         },
       }}
@@ -83,7 +95,7 @@ function CardItem({ to, label, description, image }: CardItemProps) {
               }}
               image={image}
               alt={label}
-              className="sun-image"
+              className="mood-image"
             />
           )}
           <CardContent sx={{ flex: 1, padding: "0 !important" }}>

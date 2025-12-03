@@ -1,4 +1,4 @@
-// Переменные
+// Variables
 $primary-color: #ff6464;
 $primary-color-react: #fb6161;
 $text-color-muted: #888;
@@ -7,6 +7,15 @@ $max-width: 1280px;
 #root {
   padding: 0;
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {

@@ -1,5 +1,5 @@
 const Calories = () => {
-  return <div>употреблено калорий</div>;
+  return <div>Calories Consumed</div>;
 };
 
 export default Calories;
