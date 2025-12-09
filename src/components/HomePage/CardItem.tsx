@@ -33,6 +33,8 @@ function CardItem({ to, label, description, image, moodName }: CardItemProps) {
         overflow: "hidden",
         transition: "transform 0.3s ease, boxShadow 0.3s ease",
         cursor: "pointer",
+        // Set CSS variable for mood color to use in keyframes
+        "--mood-color": moodColor || "rgba(150, 150, 150, 0.6)",
         "&:hover": {
           transform: "translateY(-8px)",
           boxShadow: 6,
@@ -42,15 +44,15 @@ function CardItem({ to, label, description, image, moodName }: CardItemProps) {
               ? {
                   // For mood-awesome and mood-good: rotation + glow
                   animation:
-                    "rotate 3s ease-in-out 1, glow 2s ease-in-out infinite",
+                    "rotate 3s ease-in-out 1, glowRotate 2s ease-in-out infinite",
                   animationFillMode: "forwards",
                   filter:
                     "drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.6))",
                 }
               : {
                   // For others: only glow (no rotation) with mood color
-                  animation: "glow 2s ease-in-out infinite",
-                  filter: `drop-shadow(0 0 15px ${moodColor}) drop-shadow(0 0 25px ${moodColor})`,
+                  animation: "glowMood 2s ease-in-out infinite",
+                  filter: `drop-shadow(0 0 15px var(--mood-color)) drop-shadow(0 0 25px var(--mood-color))`,
                 }),
           },
         },
@@ -62,12 +64,24 @@ function CardItem({ to, label, description, image, moodName }: CardItemProps) {
             transform: "rotate(360deg) scale(1.1)",
           },
         },
-        "@keyframes glow": {
+        "@keyframes glowRotate": {
           "0%, 100%": {
-            opacity: 1,
+            filter:
+              "drop-shadow(0 0 15px rgba(255, 152, 0, 0.8)) drop-shadow(0 0 25px rgba(255, 193, 7, 0.6))",
           },
           "50%": {
-            opacity: 0.8,
+            filter:
+              "drop-shadow(0 0 20px rgba(255, 152, 0, 1)) drop-shadow(0 0 35px rgba(255, 193, 7, 0.8)) drop-shadow(0 0 45px rgba(255, 235, 59, 0.6))",
+          },
+        },
+        "@keyframes glowMood": {
+          "0%, 100%": {
+            filter:
+              "drop-shadow(0 0 15px var(--mood-color)) drop-shadow(0 0 25px var(--mood-color))",
+          },
+          "50%": {
+            filter:
+              "drop-shadow(0 0 20px var(--mood-color)) drop-shadow(0 0 35px var(--mood-color)) drop-shadow(0 0 45px var(--mood-color))",
           },
         },
       }}

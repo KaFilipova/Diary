@@ -17,6 +17,7 @@ import LegoButton from "../../components/LegoButton/LegoButton";
 function Header() {
   const location = useLocation();
   const isHomePage = location.pathname === "/";
+  const isTablePage = location.pathname === "/table";
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -30,16 +31,17 @@ function Header() {
   const open = Boolean(anchorEl);
   const id = open ? "calendar-popover" : undefined;
 
-  // Get today's date
+  // Get today's date using local time (consistent for both formattedDate and dateForInput)
   const today = new Date();
-  // Format date as DD.MM.YYYY
-  const day = String(today.getDate()).padStart(2, "0");
-  const month = String(today.getMonth() + 1).padStart(2, "0");
   const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+
+  // Format date as DD.MM.YYYY
   const formattedDate = `${day}.${month}.${year}`;
 
-  // Format date for calendar input (YYYY-MM-DD)
-  const dateForInput = today.toISOString().split("T")[0];
+  // Format date for calendar input (YYYY-MM-DD) using same local time
+  const dateForInput = `${year}-${month}-${day}`;
 
   return (
     <AppBar
@@ -86,7 +88,9 @@ function Header() {
           }}
         >
           {/* Statistics button */}
-          <LegoButton text="Statistics" to="/table" size="small" />
+          {!isTablePage && (
+            <LegoButton text="Statistics" to="/table" size="small" />
+          )}
 
           <Box
             sx={{

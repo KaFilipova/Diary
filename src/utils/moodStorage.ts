@@ -1,25 +1,30 @@
-import { moods } from "./moodConfig";
+import { moods, moodConfig } from "./moodConfig";
 import type { Mood } from "../components/MoodSelector/MoodSelector";
 
 const SELECTED_MOOD_KEY = "selectedMood";
 
-/**
- * Type for mood storage structure: { "YYYY-MM-DD": "mood-name", ... }
- */
 type MoodStorageData = Record<string, string>;
 
 /**
- * Migrate old format (string) to new format (object with dates)
- * If old format exists, convert it to new format with today's date
+ * Get today's date in YYYY-MM-DD format using local time
+ */
+const getTodayLocalDate = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+/**
+ * Migrate old string format to new object format
  */
 const migrateOldFormat = (): void => {
   const stored = localStorage.getItem(SELECTED_MOOD_KEY);
   if (!stored) return;
 
-  // Check if it's old format (string, not JSON object)
   try {
     const parsed = JSON.parse(stored);
-    // If it's already an object, migration not needed
     if (
       typeof parsed === "object" &&
       parsed !== null &&
@@ -28,15 +33,14 @@ const migrateOldFormat = (): void => {
       return;
     }
   } catch {
-    // If parsing fails, it's old format (plain string)
-    const today = new Date().toISOString().split("T")[0];
+    const today = getTodayLocalDate();
     const newData: MoodStorageData = { [today]: stored };
     localStorage.setItem(SELECTED_MOOD_KEY, JSON.stringify(newData));
   }
 };
 
 /**
- * Get mood storage data, migrating from old format if needed
+ * Get mood storage data in the new format
  */
 const getMoodStorageData = (): MoodStorageData => {
   migrateOldFormat();
@@ -45,15 +49,19 @@ const getMoodStorageData = (): MoodStorageData => {
 
   try {
     const parsed = JSON.parse(stored);
-    // If it's old format (string), migrate it
     if (typeof parsed === "string") {
-      const today = new Date().toISOString().split("T")[0];
+      const today = getTodayLocalDate();
       const newData: MoodStorageData = { [today]: parsed };
       localStorage.setItem(SELECTED_MOOD_KEY, JSON.stringify(newData));
       return newData;
     }
     return parsed as MoodStorageData;
   } catch {
+    window.dispatchEvent(
+      new CustomEvent("appError", {
+        detail: "Не удалось прочитать данные настроения. Данные сброшены.",
+      })
+    );
     return {};
   }
 };
@@ -62,7 +70,7 @@ const getMoodStorageData = (): MoodStorageData => {
  * Save mood for today's date
  */
 export const saveMoodForToday = (mood: string | null): void => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayLocalDate();
   const data = getMoodStorageData();
 
   if (mood) {
@@ -71,11 +79,22 @@ export const saveMoodForToday = (mood: string | null): void => {
     delete data[today];
   }
 
-  localStorage.setItem(SELECTED_MOOD_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(SELECTED_MOOD_KEY, JSON.stringify(data));
+  } catch (e) {
+    window.dispatchEvent(
+      new CustomEvent("appError", {
+        detail: "Недостаточно места в хранилище настроений.",
+      })
+    );
+  }
+
+  // Trigger custom event to update other components
+  window.dispatchEvent(new CustomEvent("moodChanged", { detail: mood }));
 };
 
 /**
- * Get mood by specific date (format: YYYY-MM-DD)
+ * Get mood by date (YYYY-MM-DD format)
  */
 export const getMoodByDate = (date: string): string | null => {
   const data = getMoodStorageData();
@@ -83,7 +102,7 @@ export const getMoodByDate = (date: string): string | null => {
 };
 
 /**
- * Get all mood data as an array of { date, mood } sorted by date (newest first)
+ * Get all mood data sorted by date (newest first)
  */
 export const getAllMoodData = (): Array<{ date: string; mood: string }> => {
   const data = getMoodStorageData();
@@ -93,10 +112,18 @@ export const getAllMoodData = (): Array<{ date: string; mood: string }> => {
 };
 
 /**
- * Get selected mood for today from localStorage
+ * Get all mood data as object (for performance optimization)
+ * Use this when you need to access multiple dates - reads localStorage only once
+ */
+export const getAllMoodDataAsObject = (): MoodStorageData => {
+  return getMoodStorageData();
+};
+
+/**
+ * Получить выбранное настроение из localStorage (for current day)
  */
 export const getSelectedMood = (): Mood | null => {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getTodayLocalDate();
   const savedMoodName = getMoodByDate(today);
   if (!savedMoodName) return null;
 
@@ -104,7 +131,7 @@ export const getSelectedMood = (): Mood | null => {
 };
 
 /**
- * Get image of selected mood for today
+ * Получить изображение выбранного настроения
  */
 export const getSelectedMoodImage = (): string | null => {
   const selectedMood = getSelectedMood();
@@ -112,7 +139,7 @@ export const getSelectedMoodImage = (): string | null => {
 };
 
 /**
- * Get name of selected mood for today
+ * Получить имя выбранного настроения
  */
 export const getSelectedMoodName = (): string | null => {
   const selectedMood = getSelectedMood();
@@ -120,22 +147,22 @@ export const getSelectedMoodName = (): string | null => {
 };
 
 /**
- * Check if mood should rotate (only mood-awesome and mood-good)
+ * Проверить, должно ли настроение вращаться (только mood-awesome и mood-good)
  */
 export const shouldMoodRotate = (moodName: string | null): boolean => {
   return moodName === "mood-awesome" || moodName === "mood-good";
 };
 
 /**
- * Get mood color for glow effect
+ * Получить цвет настроения для эффекта подсветки
  */
 export const getMoodColor = (moodName: string | null): string => {
   if (!moodName) return "rgba(150, 150, 150, 0.6)";
 
-  // Find mood by name
-  const mood = moods.find((m) => m.name === moodName);
+  // Находим настроение по имени
+  const mood = moodConfig.find((m) => m.name === moodName);
   if (mood) {
-    // Convert hex to rgba for effect
+    // Конвертируем hex в rgba для эффекта
     const hex = mood.color.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
@@ -144,4 +171,50 @@ export const getMoodColor = (moodName: string | null): string => {
   }
 
   return "rgba(150, 150, 150, 0.6)";
+};
+
+/**
+ * Export mood data for backup
+ */
+export const exportMoodData = (): MoodStorageData => {
+  return getMoodStorageData();
+};
+
+/**
+ * Import mood data from backup
+ */
+export const importMoodData = (
+  data: unknown
+): { success: boolean; error?: string } => {
+  if (typeof data === "undefined") {
+    return { success: true };
+  }
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
+    return { success: false, error: "Некорректный формат данных настроения" };
+  }
+
+  const result: MoodStorageData = {};
+  for (const [date, mood] of Object.entries(data)) {
+    if (typeof mood === "string") {
+      result[date] = mood;
+    }
+  }
+
+  try {
+    localStorage.setItem(SELECTED_MOOD_KEY, JSON.stringify(result));
+    window.dispatchEvent(
+      new CustomEvent("moodChanged", { detail: "imported" })
+    );
+    window.dispatchEvent(
+      new CustomEvent("appInfo", { detail: "Данные настроений импортированы" })
+    );
+    return { success: true };
+  } catch {
+    window.dispatchEvent(
+      new CustomEvent("appError", {
+        detail: "Не удалось сохранить данные настроений.",
+      })
+    );
+    return { success: false, error: "Ошибка сохранения настроений" };
+  }
 };

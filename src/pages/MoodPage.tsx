@@ -2,34 +2,29 @@ import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import MoodSelector, {
   MoodCard,
+  type Mood,
 } from "../components/MoodSelector/MoodSelector";
 import { moods } from "../utils/moodConfig";
 import { saveMoodForToday, getMoodByDate } from "../utils/moodStorage";
-import LegoButton from "../components/LegoButton/LegoButton";
 
 const MoodPage = () => {
-  // Get today's date in YYYY-MM-DD format
-  const getTodayDate = (): string => {
-    return new Date().toISOString().split("T")[0];
-  };
-
-  // Load saved mood for today from localStorage on initialization
+  // Load saved mood from localStorage on initialization (for current day)
   const [selectedMood, setSelectedMood] = useState<string | null>(() => {
-    const today = getTodayDate();
-    return getMoodByDate(today);
+    // Use local time to get today's date
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const todayStr = `${year}-${month}-${day}`;
+    return getMoodByDate(todayStr);
   });
 
   const handleMoodClick = (moodName: string) => {
     const newSelectedMood = moodName === selectedMood ? null : moodName;
     setSelectedMood(newSelectedMood);
 
-    // Save to localStorage using new format
+    // Save to localStorage using the new date-based format
     saveMoodForToday(newSelectedMood);
-
-    // Trigger custom event to update other components
-    window.dispatchEvent(
-      new CustomEvent("moodChanged", { detail: newSelectedMood })
-    );
   };
 
   return (
@@ -47,7 +42,7 @@ const MoodPage = () => {
         component="h1"
         sx={{ textAlign: "center", marginBottom: 4 }}
       >
-        How are you feeling today?
+        Какое у вас сегодня настроение?
       </Typography>
       <MoodSelector />
 
@@ -71,11 +66,6 @@ const MoodPage = () => {
             onClick={() => handleMoodClick(mood.name)}
           />
         ))}
-      </Box>
-
-      {/* Statistics button */}
-      <Box sx={{ marginTop: 4 }}>
-        <LegoButton text="Statistics" to="/table" size="large" />
       </Box>
     </Box>
   );
