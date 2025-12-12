@@ -12,3 +12,5 @@ export interface TodoItem {
 
 export type Priority = "low" | "medium" | "high";
 export type Location = "дом" | "работа" | "семья" | "хобби";
+
+

@@ -6,7 +6,6 @@ import {
   Container,
   ToggleButton,
   ToggleButtonGroup,
-  TextField,
   Card,
   CardContent,
   Skeleton,
@@ -15,6 +14,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TodoList from "./todo/TodoList";
 import TodoModal from "./todo/TodoModal";
 import type { TodoItem } from "./todo/types";
@@ -24,7 +24,6 @@ import {
   deleteTodo,
   getTodosByDate,
   getTodayDateString,
-  getYesterdayDateString,
   exportTodosData,
   importTodosData,
 } from "../utils/todoStorage";
@@ -58,17 +57,15 @@ const TodoListPage = () => {
   const [editingTodo, setEditingTodo] = useState<TodoItem | null>(null);
   const [currentDate, setCurrentDate] = useState(getTodayDateString());
   const [selectedViewDate, setSelectedViewDate] = useState(
-    getYesterdayDateString()
+    getTodayDateString()
   );
   const [viewDateFilter, setViewDateFilter] = useState<
     "all" | "incomplete" | "complete"
   >("incomplete");
-  const [showPastTasks, setShowPastTasks] = useState<"incomplete" | "complete">(
-    "incomplete"
-  );
   const [isLoading, setIsLoading] = useState(true);
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const dateInputRef = useRef<HTMLInputElement | null>(null);
 
   // Update current date every minute to handle day changes
   useEffect(() => {
@@ -190,26 +187,6 @@ const TodoListPage = () => {
     }
   }, [todos, selectedViewDate, viewDateFilter]);
 
-  // Get past tasks (all dates except today and yesterday)
-  const pastTodos = useMemo(() => {
-    const allTodos = getAllTodos();
-    const today = currentDate;
-    const yesterday = getYesterdayDateString();
-
-    return allTodos.filter((todo) => {
-      if (todo.date === today || todo.date === yesterday) {
-        return false;
-      }
-
-      // Filter by showPastTasks setting
-      if (showPastTasks === "incomplete") {
-        return !todo.completed;
-      } else {
-        return todo.completed;
-      }
-    });
-  }, [todos, currentDate, showPastTasks]);
-
   // Format date for display
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -218,6 +195,19 @@ const TodoListPage = () => {
       month: "long",
       year: "numeric",
     });
+  };
+
+  const handleCalendarClick = () => {
+    if (dateInputRef.current) {
+      // Try to use showPicker() if available (modern browsers)
+      if (typeof (dateInputRef.current as any).showPicker === "function") {
+        (dateInputRef.current as any).showPicker();
+      } else {
+        // Fallback: focus and click the input
+        dateInputRef.current.focus();
+        dateInputRef.current.click();
+      }
+    }
   };
 
   const renderSkeletonList = () => (
@@ -323,7 +313,7 @@ const TodoListPage = () => {
               letterSpacing: "0.5px",
               boxShadow: `
                 0 4px 0 ${darkenColor("#5B7FA6", 20)},
-                0 6px 8px rgba(0, 0, 0, 0.15),
+                0 6px 8px rgba(187, 149, 149, 0.75),
                 inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
                 inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
               `,
@@ -348,9 +338,10 @@ const TodoListPage = () => {
               "&:hover": {
                 backgroundColor: "#5B7FA6",
                 transform: "translateY(1px)",
+                outline: "none !important",
                 boxShadow: `
                   0 3px 0 ${darkenColor("#5B7FA6", 20)},
-                  0 5px 6px rgba(0, 0, 0, 0.15),
+                  0 5px 6px rgba(226, 15, 15, 0.58),
                   inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
                   inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
                 `,
@@ -360,6 +351,33 @@ const TodoListPage = () => {
                 boxShadow: `
                   0 2px 0 ${darkenColor("#5B7FA6", 20)},
                   0 4px 4px rgba(0, 0, 0, 0.2),
+                  inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
+                  inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
+                `,
+              },
+              "&:focus": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#5B7FA6", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
+                  inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
+                `,
+              },
+              "&:focus-visible": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#5B7FA6", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
+                  inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
+                `,
+              },
+              "&.Mui-focusVisible": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#5B7FA6", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
                   inset 0 1px 0 ${lightenColor("#5B7FA6", 15)},
                   inset 0 -1px 0 ${darkenColor("#5B7FA6", 10)}
                 `,
@@ -414,6 +432,8 @@ const TodoListPage = () => {
               "&:hover": {
                 backgroundColor: "#6B8E6B",
                 transform: "translateY(1px)",
+                outline: "none !important",
+                border: `2px solid ${darkenColor("#6B8E6B", 15)} !important`,
                 boxShadow: `
                   0 3px 0 ${darkenColor("#6B8E6B", 20)},
                   0 5px 6px rgba(0, 0, 0, 0.15),
@@ -426,6 +446,33 @@ const TodoListPage = () => {
                 boxShadow: `
                   0 2px 0 ${darkenColor("#6B8E6B", 20)},
                   0 4px 4px rgba(0, 0, 0, 0.2),
+                  inset 0 1px 0 ${lightenColor("#6B8E6B", 15)},
+                  inset 0 -1px 0 ${darkenColor("#6B8E6B", 10)}
+                `,
+              },
+              "&:focus": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#6B8E6B", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 ${lightenColor("#6B8E6B", 15)},
+                  inset 0 -1px 0 ${darkenColor("#6B8E6B", 10)}
+                `,
+              },
+              "&:focus-visible": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#6B8E6B", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
+                  inset 0 1px 0 ${lightenColor("#6B8E6B", 15)},
+                  inset 0 -1px 0 ${darkenColor("#6B8E6B", 10)}
+                `,
+              },
+              "&.Mui-focusVisible": {
+                outline: "none !important",
+                boxShadow: `
+                  0 4px 0 ${darkenColor("#6B8E6B", 20)},
+                  0 6px 8px rgba(0, 0, 0, 0.15),
                   inset 0 1px 0 ${lightenColor("#6B8E6B", 15)},
                   inset 0 -1px 0 ${darkenColor("#6B8E6B", 10)}
                 `,
@@ -480,6 +527,8 @@ const TodoListPage = () => {
               "&:hover": {
                 backgroundColor: "#FF6B35",
                 transform: "translateY(1px)",
+                outline: "none !important",
+                border: `2px solid ${darkenColor("#FF6B35", 15)} !important`,
                 boxShadow: `
                 0 3px 0 ${darkenColor("#FF6B35", 20)},
                 0 5px 6px rgba(0, 0, 0, 0.15),
@@ -492,6 +541,33 @@ const TodoListPage = () => {
                 boxShadow: `
                 0 2px 0 ${darkenColor("#FF6B35", 20)},
                 0 4px 4px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 ${lightenColor("#FF6B35", 15)},
+                inset 0 -1px 0 ${darkenColor("#FF6B35", 10)}
+              `,
+              },
+              "&:focus": {
+                outline: "none !important",
+                boxShadow: `
+                0 4px 0 ${darkenColor("#FF6B35", 20)},
+                0 6px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 ${lightenColor("#FF6B35", 15)},
+                inset 0 -1px 0 ${darkenColor("#FF6B35", 10)}
+              `,
+              },
+              "&:focus-visible": {
+                outline: "none !important",
+                boxShadow: `
+                0 4px 0 ${darkenColor("#FF6B35", 20)},
+                0 6px 8px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 ${lightenColor("#FF6B35", 15)},
+                inset 0 -1px 0 ${darkenColor("#FF6B35", 10)}
+              `,
+              },
+              "&.Mui-focusVisible": {
+                outline: "none !important",
+                boxShadow: `
+                0 4px 0 ${darkenColor("#FF6B35", 20)},
+                0 6px 8px rgba(0, 0, 0, 0.15),
                 inset 0 1px 0 ${lightenColor("#FF6B35", 15)},
                 inset 0 -1px 0 ${darkenColor("#FF6B35", 10)}
               `,
@@ -595,18 +671,6 @@ const TodoListPage = () => {
                 flexWrap: "wrap",
               }}
             >
-              <TextField
-                type="date"
-                label="Select Date"
-                value={selectedViewDate}
-                onChange={(e) => setSelectedViewDate(e.target.value)}
-                size="small"
-                sx={{ minWidth: 200 }}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-
               <ToggleButtonGroup
                 value={viewDateFilter}
                 exclusive
@@ -616,35 +680,129 @@ const TodoListPage = () => {
                   }
                 }}
                 size="small"
+                sx={{
+                  "& .MuiToggleButton-root": {
+                    borderRadius: "8px",
+                    textTransform: "none",
+                    paddingX: 2,
+                    paddingY: 1,
+                    fontWeight: 600,
+                    fontSize: "0.875rem",
+                    letterSpacing: "0.5px",
+                    border: `1px solid rgba(255, 152, 0, 0.5)`,
+                    color: "rgb(94, 47, 3)",
+                    backgroundColor: "rgba(255, 152, 0, 0.35)",
+                    boxShadow: `
+                      0 2px 0 rgba(255, 152, 0, 0.3),
+                      0 3px 6px rgba(0, 0, 0, 0.12),
+                      inset 0 1px 0 rgba(255, 255, 255, 0.15)
+                    `,
+                    position: "relative",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 153, 0, 0.26)",
+                      transform: "translateY(1px)",
+                      boxShadow: `
+                        0 1px 0 rgba(255, 152, 0, 0.3),
+                        0 2px 4px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15)
+                      `,
+                    },
+                    "&:active": {
+                      transform: "translateY(2px)",
+                      boxShadow: `
+                        0 1px 0 rgba(255, 152, 0, 0.3),
+                        0 2px 3px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.15)
+                      `,
+                    },
+                    "&:focus": {
+                      outline: "none",
+                    },
+                    "&:focus-visible": {
+                      outline: "none",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "rgba(255, 107, 53, 0.5)",
+                      border: `1px solid rgba(255, 107, 53, 0.6)`,
+                      color: "rgb(94, 47, 3)",
+                      boxShadow: `
+                        0 2px 0 rgba(255, 107, 53, 0.35),
+                        0 3px 6px rgba(0, 0, 0, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                      `,
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 107, 53, 0.6)",
+                        boxShadow: `
+                          0 1px 0 rgba(255, 107, 53, 0.35),
+                          0 2px 4px rgba(0, 0, 0, 0.12),
+                          inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                        `,
+                      },
+                      "&:active": {
+                        boxShadow: `
+                          0 1px 0 rgba(255, 107, 53, 0.35),
+                          0 2px 3px rgba(0, 0, 0, 0.12),
+                          inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                        `,
+                      },
+                      "&:focus": {
+                        outline: "none",
+                      },
+                      "&:focus-visible": {
+                        outline: "none",
+                      },
+                    },
+                  },
+                }}
               >
                 <ToggleButton value="all">All</ToggleButton>
                 <ToggleButton value="incomplete">Incomplete</ToggleButton>
                 <ToggleButton value="complete">Complete</ToggleButton>
               </ToggleButtonGroup>
-
-              <Box sx={{ flex: 1 }} />
-
-              <Button
-                variant="outlined"
-                size="small"
-                onClick={() => {
-                  setSelectedViewDate(getYesterdayDateString());
-                  setViewDateFilter("incomplete");
-                }}
-              >
-                Yesterday
-              </Button>
             </Box>
 
-            <Typography
-              variant="body2"
-              sx={{
-                color: "text.secondary",
-                fontStyle: "italic",
-              }}
-            >
-              {formatDate(selectedViewDate)}
-            </Typography>
+            <Box sx={{ position: "relative", display: "inline-flex" }}>
+              <Typography
+                variant="h6"
+                onClick={handleCalendarClick}
+                sx={{
+                  fontWeight: 600,
+                  color: "warning.main",
+                  cursor: "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 1,
+                  transition: "all 0.2s ease",
+                  userSelect: "none",
+                  "&:hover": {
+                    color: "warning.dark",
+                    transform: "scale(1.02)",
+                  },
+                  "&:active": {
+                    transform: "scale(0.98)",
+                  },
+                }}
+              >
+                <CalendarTodayIcon sx={{ fontSize: 20 }} />
+                {formatDate(selectedViewDate)}
+              </Typography>
+              <input
+                ref={dateInputRef}
+                type="date"
+                value={selectedViewDate}
+                onChange={(e) => {
+                  setSelectedViewDate(e.target.value);
+                }}
+                style={{
+                  position: "absolute",
+                  opacity: 0,
+                  width: 0,
+                  height: 0,
+                  pointerEvents: "none",
+                }}
+              />
+            </Box>
           </Box>
 
           {isLoading ? (
@@ -672,53 +830,6 @@ const TodoListPage = () => {
           )}
         </CardContent>
       </Card>
-
-      {/* Past tasks */}
-      {pastTodos.length > 0 && (
-        <Box sx={{ marginBottom: 4 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 2,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                color: "text.secondary",
-              }}
-            >
-              Past Tasks
-            </Typography>
-            <ToggleButtonGroup
-              value={showPastTasks}
-              exclusive
-              onChange={(_, value) => {
-                if (value !== null) {
-                  setShowPastTasks(value);
-                }
-              }}
-              size="small"
-            >
-              <ToggleButton value="incomplete">Incomplete</ToggleButton>
-              <ToggleButton value="complete">Complete</ToggleButton>
-            </ToggleButtonGroup>
-          </Box>
-          {isLoading ? (
-            renderSkeletonList()
-          ) : (
-            <TodoList
-              todos={pastTodos}
-              onEdit={handleEditTodo}
-              onDelete={handleDeleteTodo}
-              onToggleComplete={handleToggleComplete}
-            />
-          )}
-        </Box>
-      )}
 
       <TodoModal
         open={modalOpen}
