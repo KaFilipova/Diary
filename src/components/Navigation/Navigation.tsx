@@ -14,6 +14,15 @@ const styles = {
     backgroundColor: "rgba(94, 47, 3, 0.1)",
     transform: "translateY(-2px)",
   },
+  "&:active": {
+    transform: "translateY(2px)",
+  },
+  "&:focus": {
+    outline: "none",
+  },
+  "&:focus-visible": {
+    outline: "none",
+  },
   "&.active": {
     backgroundColor: "rgba(94, 47, 3, 0.2)",
     fontWeight: 600,

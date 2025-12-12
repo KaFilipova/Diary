@@ -1,4 +1,4 @@
-// Variables
+// Переменные
 $font-family-base: "Roboto", system-ui, Avenir, Helvetica, Arial, sans-serif;
 $primary-color: hsl(237, 100%, 70%);
 $primary-color-hover: #b41919;
@@ -54,15 +54,19 @@ button {
   font-family: inherit;
   background-color: $button-bg-dark;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: all 0.2s ease;
 
   &:hover {
     border-color: $primary-color;
   }
 
+  &:active {
+    transform: translateY(2px);
+  }
+
   &:focus,
   &:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
+    outline: none;
   }
 }
 
@@ -79,4 +83,20 @@ button {
       background-color: $button-bg-light;
     }
   }
+}
+
+// Global styles for Material-UI buttons
+.MuiButton-root,
+.MuiIconButton-root,
+.MuiToggleButton-root {
+  &:active {
+    transform: translateY(2px) !important;
+  }
+  
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+  }
+  
+  transition: all 0.2s ease !important;
 }

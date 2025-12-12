@@ -193,8 +193,40 @@ const TodoModal = ({ open, onClose, onSave, editingTodo }: TodoModalProps) => {
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained" disabled={!canSave}>
+        <Button
+          onClick={handleClose}
+          sx={{
+            "&:active": {
+              transform: "translateY(2px)",
+            },
+            "&:focus": {
+              outline: "none",
+            },
+            "&:focus-visible": {
+              outline: "none",
+            },
+            transition: "all 0.2s ease",
+          }}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          disabled={!canSave}
+          sx={{
+            "&:active": {
+              transform: "translateY(2px)",
+            },
+            "&:focus": {
+              outline: "none",
+            },
+            "&:focus-visible": {
+              outline: "none",
+            },
+            transition: "all 0.2s ease",
+          }}
+        >
           {editingTodo ? "Save" : "Add"}
         </Button>
       </DialogActions>

@@ -205,6 +205,18 @@ const TodoCard = ({
           onClick={() => setExpanded(!expanded)}
           aria-label="expand description"
           size="small"
+          sx={{
+            "&:active": {
+              transform: "translateY(2px)",
+            },
+            "&:focus": {
+              outline: "none",
+            },
+            "&:focus-visible": {
+              outline: "none",
+            },
+            transition: "all 0.2s ease",
+          }}
         >
           {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
         </IconButton>
@@ -214,6 +226,18 @@ const TodoCard = ({
             aria-label="edit"
             color="primary"
             size="small"
+            sx={{
+              "&:active": {
+                transform: "translateY(2px)",
+              },
+              "&:focus": {
+                outline: "none",
+              },
+              "&:focus-visible": {
+                outline: "none",
+              },
+              transition: "all 0.2s ease",
+            }}
           >
             <EditIcon />
           </IconButton>
@@ -222,6 +246,18 @@ const TodoCard = ({
             aria-label="delete"
             color="error"
             size="small"
+            sx={{
+              "&:active": {
+                transform: "translateY(2px)",
+              },
+              "&:focus": {
+                outline: "none",
+              },
+              "&:focus-visible": {
+                outline: "none",
+              },
+              transition: "all 0.2s ease",
+            }}
           >
             <DeleteIcon />
           </IconButton>
@@ -232,3 +268,4 @@ const TodoCard = ({
 };
 
 export default TodoCard;
+
