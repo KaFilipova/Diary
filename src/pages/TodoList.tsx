@@ -169,11 +169,6 @@ const TodoListPage = () => {
     setModalOpen(true);
   };
 
-  // Get today's tasks
-  const todayTodos = useMemo(() => {
-    return getTodosByDate(currentDate);
-  }, [currentDate, todos]);
-
   // Get tasks for selected view date
   const selectedDateTodos = useMemo(() => {
     const dateTodos = getTodosByDate(selectedViewDate);
@@ -600,40 +595,6 @@ const TodoListPage = () => {
           {importError}
         </Alert>
       )}
-
-      {/* Today's tasks */}
-      <Box sx={{ marginBottom: 4 }}>
-        <Typography
-          variant="h6"
-          sx={{
-            marginBottom: 2,
-            fontWeight: 600,
-            color: "text.primary",
-          }}
-        >
-          Today - {formatDate(currentDate)}
-        </Typography>
-        {isLoading ? (
-          renderSkeletonList()
-        ) : todayTodos.length === 0 ? (
-          <Box
-            sx={{
-              textAlign: "center",
-              padding: 4,
-              color: "text.secondary",
-            }}
-          >
-            <Typography variant="body1">No tasks for today</Typography>
-          </Box>
-        ) : (
-          <TodoList
-            todos={todayTodos}
-            onEdit={handleEditTodo}
-            onDelete={handleDeleteTodo}
-            onToggleComplete={handleToggleComplete}
-          />
-        )}
-      </Box>
 
       {/* View tasks by date */}
       <Card
